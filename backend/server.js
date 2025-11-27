@@ -1,11 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 dotenv.config();
 
 const app = express();
 const port = process.env.port || 5000;
+
+//moddleware
+app.use(express.json());
+app.use(cors());
 
 //conect to mongo DB
 mongoose
@@ -13,11 +18,10 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB");
   })
-  .catch((err) => {
+  .catch(err => {
     console.log("error connecting to MongoDB", err);
   });
-//middleware
-app.use(express.json());
+
 
 //todo schema and model
 const todoSchema = new mongoose.Schema({
@@ -50,28 +54,29 @@ app.get("/app/todos", async (req, res) => {
 });
 
 // update all todo
-app.put('/api/todos/:id',async(req,res)=>{
-    try{
-        const {id}=req.params
-        const {text,completed}=req.body
-        const todo=await Todo.findByIdAndUpdate(id,{text,completed},{new:true})
-
-    }
-    catch(err){
-        res.status(400).json({error:'failed to update Todo'})
-    }
-})
+app.put("/api/todos/:id", async (req, res) => {
+  try {
+    const {id} = req.params;
+    const {text, completed} = req.body;
+    const todo = await Todo.findByIdAndUpdate(
+      id,
+      {text, completed},
+      {new: true}
+    );
+  } catch (err) {
+    res.status(400).json({error: "failed to update Todo"});
+  }
+});
 //delete a todo
-app.delete('/api/todos/:id',async(req,res)=>{
-    try{
-        const {id}=req.params
-        await Todo.findByIdAndDelete(id)
-        res.status(204).send();
-    }
-    catch(err){
-res.status(400).json({error:'Failed to delete ToDo'})
-    }
-})
+app.delete("/api/todos/:id", async (req, res) => {
+  try {
+    const {id} = req.params;
+    await Todo.findByIdAndDelete(id);
+    res.status(204).send();
+  } catch (err) {
+    res.status(400).json({error: "Failed to delete ToDo"});
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);

@@ -1,9 +1,16 @@
 import React, {useState} from "react";
+import axios from "axios";
 
-function AddTodo() {
+function AddTodo({fetchTodos}) {
   const [text, setText] = useState("");
 
-  const handleAddTodo = () => {};
+  const handleAddTodo = async () => {
+    if (!text.trim()) return alert("Enter something");
+
+    await axios.post("http://localhost:5000/api/todos", {text});
+    setText("");
+    fetchTodos();
+  };
 
   return (
     <div>
