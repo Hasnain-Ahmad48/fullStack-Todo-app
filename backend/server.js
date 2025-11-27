@@ -9,8 +9,8 @@ const app = express();
 const port = process.env.port || 5000;
 
 //moddleware
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
 //conect to mongo DB
 mongoose
@@ -32,9 +32,12 @@ const Todo = mongoose.model("Todo", todoSchema);
 
 //define CRUD routes
 //create new todo
+
 app.post("/api/todos", async (req, res) => {
+  console.log("Received Body:", req.body);
+  
   try {
-    const {text} = req(body);
+    const {text} = req.body;
     const todo = new Todo({text, completed: false});
     await todo.save();
     res.status(201).json(todo);
@@ -44,7 +47,7 @@ app.post("/api/todos", async (req, res) => {
 });
 
 //read all todo
-app.get("/app/todos", async (req, res) => {
+app.get("/api/todos", async (req, res) => {
   try {
     const todos = await Todo.find();
     res.json(todos);
@@ -63,6 +66,7 @@ app.put("/api/todos/:id", async (req, res) => {
       {text, completed},
       {new: true}
     );
+    res.json(todo)
   } catch (err) {
     res.status(400).json({error: "failed to update Todo"});
   }
